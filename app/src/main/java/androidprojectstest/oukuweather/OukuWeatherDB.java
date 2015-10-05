@@ -15,7 +15,7 @@ public class OukuWeatherDB {
     //数据库名
     public static final String DB_NAME = "ouku_weather";
     //数据库版本
-    public static final int VERSION = 1;
+    public static final int VERSION = 2;
     private static OukuWeatherDB oukuWeatherDB;
     private SQLiteDatabase db;
 
@@ -83,28 +83,28 @@ public class OukuWeatherDB {
         }
         return list;
     }
-    //将County实例存储到数据库
-    public void saveCounty(County county){
-        if (county!=null){
+    //将Prefecture实例存储到数据库
+    public void savePrefecture(Prefecture prefecture){
+        if (prefecture!=null){
             ContentValues values=new ContentValues();
-            values.put("county_name",county.getCountyName());
-            values.put("cityId",county.getCityId());
-            values.put("county_code",county.getCountyCode());
-            db.insert("County",null,values);
+            values.put("city_id",prefecture.getCityId());
+            values.put("prefecture_name",prefecture.getPrefectureName());
+            values.put("prefecture_code",prefecture.getPrefectureCode());
+            db.insert("Prefecture",null,values);
         }
     }
     //从数据库读取某城市下所有的县信息
-    public List<County> loadCounties(int cityId){
-        List<County> list=new ArrayList<County>();
-        Cursor cursor=db.query("County",null,"city_id=?",new String[]{String.valueOf(cityId)},null,null,null);
+    public List<Prefecture> loadPrefectures(int cityId){
+        List<Prefecture> list=new ArrayList<Prefecture>();
+        Cursor cursor=db.query("Prefecture",null,"city_id=?",new String[]{String.valueOf(cityId)},null,null,null);
         if (cursor.moveToFirst()){
             do {
-                County county=new County();
-                county.setId(cursor.getInt(cursor.getColumnIndex("id")));
-                county.setCountyCode(cursor.getString(cursor.getColumnIndex("county_code")));
-                county.setCountyName(cursor.getString(cursor.getColumnIndex("county_name")));
-                county.setCityId(cityId);
-                list.add(county);
+                Prefecture prefecture=new Prefecture();
+                prefecture.setId(cursor.getInt(cursor.getColumnIndex("id")));
+                prefecture.setPrefectureCode(cursor.getString(cursor.getColumnIndex("prefecture_code")));
+                prefecture.setPrefectureName(cursor.getString(cursor.getColumnIndex("prefecture_name")));
+                prefecture.setCityId(cityId);
+                list.add(prefecture);
             }while (cursor.moveToNext());
         }
         return list;

@@ -46,18 +46,18 @@ public class Utility {
     }
 
     //解析和处理服务器返回的县级数据
-    public static boolean handleCountiesResponse(OukuWeatherDB oukuWeatherDB, String response, int cityId) {
+    public static boolean handlePrefecturesResponse(OukuWeatherDB oukuWeatherDB, String response, int cityId) {
         if (!TextUtils.isEmpty(response)) {
-            String[] allCounties = response.split(",");
-            if (allCounties != null && allCounties.length > 0) {
-                for (String c : allCounties) {
+            String[] allPrefectures = response.split(",");
+            if (allPrefectures != null && allPrefectures.length > 0) {
+                for (String c : allPrefectures) {
                     String[] array = c.split("\\|");
-                    County county = new County();
-                    county.setCityId(cityId);
-                    county.setCountyName(array[0]);
-                    county.setCountyCode(array[1]);
-                    //将解析出来的数据存储到County表
-                    oukuWeatherDB.saveCounty(county);
+                    Prefecture prefecture = new Prefecture();
+                    prefecture.setPrefectureCode(array[0]);
+                    prefecture.setPrefectureName(array[1]);
+                    prefecture.setCityId(cityId);
+                    //将解析出来的数据存储到Prefecture表
+                    oukuWeatherDB.savePrefecture(prefecture);
                 }
                 return true;
             }

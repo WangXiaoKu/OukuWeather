@@ -21,7 +21,7 @@ import java.util.List;
 public class ChooseAreaActivity extends Activity {
     public static final int LEVEL_PROVINCE = 0;
     public static final int LEVEL_CITY = 1;
-    public static final int LEVEL_COUNTY = 2;
+    public static final int LEVEL_PREFECTURE = 2;
 
     private ProgressDialog progressDialog;
     private TextView titleText;
@@ -34,7 +34,7 @@ public class ChooseAreaActivity extends Activity {
     //市列表
     private List<City> cityList;
     //县列表
-    private List<County> countyList;
+    private List<Prefecture> prefectureList;
     //选中的省份
     private Province selectedProvince;
     //选中的城市
@@ -64,7 +64,7 @@ public class ChooseAreaActivity extends Activity {
                     queryCities();
                 } else if (currentLevel == LEVEL_CITY) {
                     selectedCity = cityList.get(position);
-                    queryCounties();
+                    queryPrefectures();
                 }
             }
         });
@@ -106,19 +106,19 @@ public class ChooseAreaActivity extends Activity {
     }
 
     //查询选中市中所有的县，优先从数据库查询，如果没有查询到再去服务器上查询
-    private void queryCounties() {
-        countyList = oukuWeatherDB.loadCounties(selectedCity.getId());
-        if (countyList.size() > 0) {
+    private void queryPrefectures() {
+        prefectureList = oukuWeatherDB.loadPrefectures(selectedCity.getId());
+        if (prefectureList.size() > 0) {
             dataList.clear();
-            for (County county : countyList) {
-                dataList.add(county.getCountyCode());
+            for (Prefecture prefecture : prefectureList) {
+                dataList.add(prefecture.getPrefectureName());
             }
             adapter.notifyDataSetChanged();
             listView.setSelection(0);
             titleText.setText(selectedCity.getCityName());
-            currentLevel = LEVEL_COUNTY;
+            currentLevel = LEVEL_PREFECTURE;
         } else {
-            queryFromServer(selectedCity.getCityCode(), "county");
+            queryFromServer(selectedCity.getCityCode(), "prefecture");
         }
     }
 
@@ -139,8 +139,8 @@ public class ChooseAreaActivity extends Activity {
                     result = Utility.handleProvincesResponse(oukuWeatherDB, response);
                 } else if ("city".equals(type)) {
                     result = Utility.handleCityResponse(oukuWeatherDB, response, selectedProvince.getId());
-                } else if ("county".equals(type)) {
-                    result = Utility.handleCountiesResponse(oukuWeatherDB, response, selectedCity.getId());
+                } else if ("prefecture".equals(type)) {
+                    result = Utility.handlePrefecturesResponse(oukuWeatherDB, response, selectedCity.getId());
                 }
                 if (result) {
                     //通过runOnUiThread()方法回到主线程处理逻辑
@@ -152,8 +152,8 @@ public class ChooseAreaActivity extends Activity {
                                 queryProvinces();
                             } else if ("city".equals(type)) {
                                 queryCities();
-                            } else if ("county".equals(type)) {
-                                queryCounties();
+                            } else if ("prefecture".equals(type)) {
+                                queryPrefectures();
                             }
                         }
                     });
@@ -179,7 +179,7 @@ public class ChooseAreaActivity extends Activity {
         if (progressDialog == null) {
             progressDialog = new ProgressDialog(this);
             progressDialog.setMessage("正在加载");
-            progressDialog.setCanceledOnTouchOutside(false);
+            progressDialog.setCanceledOnTouchOutside(true);
         }
         progressDialog.show();
     }
@@ -193,7 +193,7 @@ public class ChooseAreaActivity extends Activity {
 
     //捕获Back按键，根据当前级别来判断，此时应该返回市列表、省列表、还是直接退出
     public void onBackPressed() {
-        if (currentLevel == LEVEL_COUNTY) {
+        if (currentLevel == LEVEL_PREFECTURE) {
             queryCities();
         } else if (currentLevel == LEVEL_CITY) {
             queryProvinces();
