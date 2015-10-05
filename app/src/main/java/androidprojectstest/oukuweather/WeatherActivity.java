@@ -111,11 +111,11 @@ public class WeatherActivity extends Activity implements View.OnClickListener {
     private void queryFromServer(final String address, final String type) {
         HttpUtil.sendHttpRequest(address, new HttpCallbackListener() {
             @Override
-            public void onFinish(String s) {
+            public void onFinish(final String response) {
                 if ("prefectureCode".equals(type)) {
-                    if (!TextUtils.isEmpty(s)) {
+                    if (!TextUtils.isEmpty(response)) {
                         //从服务器返回的数据中解析出天气代号
-                        String[] array = s.split("\\|");
+                        String[] array = response.split("\\|");
                         if (array != null && array.length == 2) {
                             String weatherCode = array[1];
                             queryWeatherInfo(weatherCode);
@@ -123,7 +123,7 @@ public class WeatherActivity extends Activity implements View.OnClickListener {
                     }
                 } else if ("weatherCode".equals(type)) {
                     //处理服务器返回的天气信息
-                    Utility.handleWeatherResponse(WeatherActivity.this, s);
+                    Utility.handleWeatherResponse(WeatherActivity.this, response);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {

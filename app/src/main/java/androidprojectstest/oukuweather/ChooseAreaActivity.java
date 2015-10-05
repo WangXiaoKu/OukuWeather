@@ -44,13 +44,16 @@ public class ChooseAreaActivity extends Activity {
     private City selectedCity;
     //当前选中的级别
     private int currentLevel;
+    //是否从WeatherActivity中跳转过来
+    private boolean isFromWeatherActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        SharedPreferences prefs= PreferenceManager.getDefaultSharedPreferences(this);
-        if (prefs.getBoolean("city_selected",false)){
-            Intent intent=new Intent(this,WeatherActivity.class);
+        isFromWeatherActivity = getIntent().getBooleanExtra("from_weather_activity", false);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        if (prefs.getBoolean("city_selected", false)) {
+            Intent intent = new Intent(this, WeatherActivity.class);
             startActivity(intent);
             finish();
             return;
@@ -75,10 +78,10 @@ public class ChooseAreaActivity extends Activity {
                 } else if (currentLevel == LEVEL_CITY) {
                     selectedCity = cityList.get(position);
                     queryPrefectures();
-                }else if (currentLevel==LEVEL_PREFECTURE){
-                    String prefectureCode=prefectureList.get(position).getPrefectureCode();
-                    Intent intent=new Intent(ChooseAreaActivity.this,WeatherActivity.class);
-                    intent.putExtra("prefecture_code",prefectureCode);
+                } else if (currentLevel == LEVEL_PREFECTURE) {
+                    String prefectureCode = prefectureList.get(position).getPrefectureCode();
+                    Intent intent = new Intent(ChooseAreaActivity.this, WeatherActivity.class);
+                    intent.putExtra("prefecture_code", prefectureCode);
                     startActivity(intent);
                     finish();
                 }
@@ -214,6 +217,10 @@ public class ChooseAreaActivity extends Activity {
         } else if (currentLevel == LEVEL_CITY) {
             queryProvinces();
         } else {
+            if (isFromWeatherActivity) {
+                Intent intent = new Intent(this, WeatherActivity.class);
+                startActivity(intent);
+            }
             finish();
         }
     }
